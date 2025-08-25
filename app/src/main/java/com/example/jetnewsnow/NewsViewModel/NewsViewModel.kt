@@ -187,19 +187,19 @@ class NewsViewModel : ViewModel() {
         // Check if article already exists to avoid duplicates
         db.collection("saved_articles")
             .whereEqualTo("userId", userId)  // No space
-            .whereEqualTo("url", article.url ?: "")
+            .whereEqualTo("url", article.url)
             .get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     // Article doesn't exist, save it
                     val savedArticle = SaveArticle(
                         userId = userId,
-                        title = article.title ?: "",
+                        title = article.title,
                         description = article.description,
-                        url = article.url ?: "",
+                        url = article.url,
                         urlToImage = article.urlToImage,
                         publishedAt = article.publishedAt,
-                        source = article.source?.name,
+                        source = article.source.name,
                         author = article.author
                     )
 

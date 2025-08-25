@@ -54,9 +54,6 @@ import com.example.jetnewsnow.ui.theme.purplePrimary
 @Composable
 fun LoginScreen(navController: NavController,newsViewModel: NewsViewModel){
 
-
-    //cfd8491f0f064e4c970b09c429aec5da api key
-
     var email by remember{ mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }

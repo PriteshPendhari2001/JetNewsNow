@@ -1,6 +1,7 @@
 package com.example.jetnewsnow.View.Screens
 
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,15 +13,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,135 +39,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.jetnewsnow.Model.Navigation.NavigationRoutes
 import com.example.jetnewsnow.Model.NewsResponse.Article
 import com.example.jetnewsnow.Model.NewsResponse.SaveArticle
 import com.example.jetnewsnow.Model.NewsResponse.Source
 import com.example.jetnewsnow.NewsViewModel.AuthState
 import com.example.jetnewsnow.NewsViewModel.NewsViewModel
-import com.google.firebase.BuildConfig
+import com.example.jetnewsnow.R
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
-
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun BookmarkScreen(navController: NavController,newsViewModel: NewsViewModel) {
-//    val savedArticles by newsViewModel.saveArticle.collectAsState()
-//    val authState by newsViewModel.authState.collectAsState()
-//
-//    LaunchedEffect(Unit) {
-//        if (authState is AuthState.Authenticated) {
-//            newsViewModel.fetchSavedArticles()
-//        }
-//    }
-//
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = { Text("Saved Articles") },
-//                navigationIcon = {
-//                    IconButton(onClick = { navController.popBackStack() }) {
-//                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-//                    }
-//                }
-//            )
-//        }
-//    ) { innerPadding ->
-//        if (authState is AuthState.Unauthenticated) {
-//            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                Text("Please log in to view saved articles")
-//            }
-//        } else {
-//            if (savedArticles.isEmpty()) {
-//                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                    Text("No saved articles yet")
-//                }
-//            } else {
-//                LazyColumn(modifier = Modifier.padding(innerPadding)) {
-//                    items(savedArticles) { savedArticle ->
-//                        SavedArticleItem(
-//                            article = savedArticle,
-//                            onDelete = { newsViewModel.deleteSavedArticle(savedArticle.id) },
-//                            onClick = {
-//                                // Convert to Article object for navigation
-//                                val article = Article(
-//                                    source = Source(id = null, name = savedArticle.source),
-//                                    author = savedArticle.author,
-//                                    title = savedArticle.title,
-//                                    description = savedArticle.description,
-//                                    url = savedArticle.url,
-//                                    urlToImage = savedArticle.urlToImage,
-//                                    publishedAt = savedArticle.publishedAt,
-//                                    content = null
-//                                )
-//                                val json = Uri.encode(Gson().toJson(article))
-//                                navController.navigate("newsDetails/$json")
-//                            }
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-//
-//@Composable
-//fun SavedArticleItem(article: SaveArticle, onDelete: () -> Unit, onClick: () -> Unit) {
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(8.dp)
-//            .clickable(onClick = onClick)
-//    ) {
-//        Column(modifier = Modifier.padding(16.dp)) {
-//            Text(
-//                text = article.title,
-//                fontWeight = FontWeight.Bold,
-//                fontSize = 18.sp,
-//                modifier = Modifier.fillMaxWidth()
-//            )
-//
-//            Spacer(modifier = Modifier.height(8.dp))
-//
-//            article.description?.let {
-//                Text(
-//                    text = it,
-//                    fontSize = 14.sp,
-//                    maxLines = 2,
-//                    overflow = TextOverflow.Ellipsis,
-//                    modifier = Modifier.fillMaxWidth()
-//                )
-//            }
-//
-//            Spacer(modifier = Modifier.height(8.dp))
-//
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.SpaceBetween,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Text(
-//                    text = article.source ?: "Unknown Source",
-//                    fontSize = 12.sp,
-//                    color = Color.Gray
-//                )
-//
-//                IconButton(onClick = onDelete) {
-//                    Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = Color.Red)
-//                }
-//            }
-//        }
-//    }
-//}
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -252,50 +145,100 @@ fun BookmarkScreen(navController: NavController, newsViewModel: NewsViewModel) {
     }
 }
 
-
 @Composable
 fun SavedArticleItem(article: SaveArticle, onDelete: () -> Unit, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = article.title,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            article.description?.let {
-                Text(
-                    text = it,
-                    fontSize = 14.sp,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            // Left side → Image
+            if (!article.urlToImage.isNullOrEmpty()) {
+                AsyncImage(
+                    model = article.urlToImage,
+                    contentDescription = article.title,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Crop
                 )
+            } else {
+                // Placeholder if no image
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.LightGray),
+                    contentAlignment = Alignment.Center
+                ) {
+
+                    Icon(
+                        painter = painterResource(R.drawable.image),
+                        contentDescription = "No image",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Right side → Text content
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterVertically)
             ) {
                 Text(
-                    text = article.source ?: "Unknown Source",
-                    fontSize = 12.sp,
-                    color = Color.Gray
+                    text = article.title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
 
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Delete", tint = Color.Red)
+                if (!article.description.isNullOrEmpty()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = article.description!!,
+                        fontSize = 13.sp,
+                        color = Color.DarkGray,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = article.source?.ifEmpty { "Unknown Source" } ?: "",
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            tint = Color.Red
+                        )
+                    }
                 }
             }
         }
