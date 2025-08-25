@@ -8,7 +8,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.jetnewsnow.Model.Navigation.NewsNavigation
 import com.example.jetnewsnow.NewsViewModel.NewsViewModel
 import com.example.jetnewsnow.ui.theme.JetNewsNowTheme
-import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
