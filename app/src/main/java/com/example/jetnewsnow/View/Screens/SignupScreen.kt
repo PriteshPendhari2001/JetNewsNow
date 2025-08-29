@@ -179,16 +179,6 @@ fun SignupScreen(navcontroller: NavController, viewModel: NewsViewModel) {
                 )
             }
 
-            TextButton(onClick = {}, modifier = Modifier.align(Alignment.End)) {
-                Text(
-                    "Forgot the password ?",
-                    color = bluePrimary,
-                    fontFamily = poppins,
-                    fontWeight = SemiBold,
-                    fontSize = 13.sp
-                )
-            }
-
             Button(
                 onClick = {
 
